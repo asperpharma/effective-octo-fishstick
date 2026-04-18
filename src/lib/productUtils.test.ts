@@ -4,6 +4,7 @@ import {
   getLocalizedDescription,
   getProductCategory,
   summarizeDescription,
+  translateToArabic,
   translateTitle,
 } from "./productUtils";
 
@@ -18,6 +19,14 @@ describe("summarizeDescription", () => {
     const result = summarizeDescription(long, 60);
     expect(result.length).toBeLessThanOrEqual(60);
     expect(result.endsWith("...")).toBe(true);
+  });
+
+  it("returns empty string when description is missing", () => {
+    expect(summarizeDescription("")).toBe("");
+  });
+
+  it("handles descriptions without sentence delimiters", () => {
+    expect(summarizeDescription("<br>", 10)).toBe("");
   });
 });
 
@@ -39,9 +48,23 @@ describe("translateTitle and localization helpers", () => {
     expect(localized.length).toBeLessThanOrEqual(80);
   });
 
+  it("returns summarized English description without translation", () => {
+    const description = "<p>Rich night cream. Deeply nourishes skin.</p>";
+    const localized = getLocalizedDescription(description, "en", 50);
+    expect(localized).toBe("Rich night cream. Deeply nourishes skin");
+  });
+
   it("localizes categories with known translations or falls back to Arabic conversion", () => {
     expect(getLocalizedCategory("Skin Care", "ar")).toBe("العناية بالبشرة");
     expect(getLocalizedCategory("Bright Glow", "ar")).toContain("مشرق");
+  });
+
+  it("returns raw value when no translation is needed", () => {
+    expect(getLocalizedCategory("", "en")).toBe("");
+  });
+
+  it("gracefully handles empty Arabic translations", () => {
+    expect(translateToArabic("")).toBe("");
   });
 });
 
@@ -66,6 +89,10 @@ describe("extractKeyBenefits", () => {
       "حماية من الشمس",
       "تركيبة لطيفة",
     ]);
+  });
+
+  it("returns empty list when description is missing", () => {
+    expect(extractKeyBenefits("")).toEqual([]);
   });
 });
 

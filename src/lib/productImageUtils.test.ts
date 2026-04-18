@@ -42,4 +42,8 @@ describe("price formatting helpers", () => {
   it("formats legacy price style for iHerb mode", () => {
     expect(formatPriceJOD(2.434, "iherb")).toBe("JOD 2.434");
   });
+
+  it("defaults to BeautyBox formatting when style is omitted", () => {
+    expect(formatPriceJOD(3.1)).toBe("3.100 JD");
+  });
 });
